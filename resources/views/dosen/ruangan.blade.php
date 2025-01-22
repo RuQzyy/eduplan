@@ -29,7 +29,6 @@ $ruangan = DB::table('ruangan')->get();
       transition: transform 0.2s;
     }
 
-    /* Menambahkan gradasi latar belakang untuk halaman */
     body {
       background: linear-gradient(135deg, #7b83b4, #3a4d81);
     }
@@ -71,12 +70,10 @@ $ruangan = DB::table('ruangan')->get();
   <header class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg p-4 flex justify-between items-center text-white z-50">
     <img alt="Logo" class="h-12 rounded-full" src="{{ asset('img/maxresdefault.jpg') }}" />
     <nav class="flex space-x-6">
-      <!-- Link Dashboard -->
       <a class="flex items-center space-x-2 hover:text-yellow-400" href="/dosen/dashboard">
         <i class="fas fa-calendar-alt"></i>
         <span>Dashboard</span>
       </a>
-      <!-- Link Ruangan -->
       <a class="flex items-center space-x-2 hover:text-yellow-400" href="/dosen/ruangan">
         <i class="fas fa-door-open"></i>
         <span>Ruangan</span>
@@ -101,7 +98,6 @@ $ruangan = DB::table('ruangan')->get();
         @endforeach
       </div>
     </div>
-
 
     <!-- Room Details -->
     <div class=" flex justify-center">
@@ -142,16 +138,15 @@ $ruangan = DB::table('ruangan')->get();
       <form action="{{ route('permintaan.store') }}" method="POST">
         @csrf
         <div class="mb-4">
-          <!-- <label for="name" class="block text-gray-700">id_dosen</label> -->
           <input id="name" name="id_dosen" value="{{ Auth::user()->id }}" type="text" class="w-full border border-gray-400 p-2 rounded" hidden />
         </div>
         <div class="mb-4">
           <label for="name" class="block text-gray-700">Pilih Ruangan</label>
-          <select name="id_ruangan" id="" class="w-full border border-gray-400 p-2 rounded" />
-          <option value=""></option>
-          @foreach ($ruang as $ruangan)
-          <option value="{{ $ruangan->id_ruangan }}">{{ $ruangan->nama_ruangan }}</option>
-          @endforeach
+          <select name="id_ruangan" id="" class="w-full border border-gray-400 p-2 rounded">
+            <option value=""></option>
+            @foreach ($ruang as $ruangan)
+            <option value="{{ $ruangan->id_ruangan }}">{{ $ruangan->nama_ruangan }}</option>
+            @endforeach
           </select>
         </div>
         <div class="mb-4">
@@ -171,117 +166,88 @@ $ruangan = DB::table('ruangan')->get();
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const ambilButton = document.getElementById('ambilButton'); // Tombol "Ambil"
-      const tahanButton = document.getElementById('tahanButton'); // Tombol "Tahan"
-      const modal = document.getElementById('modal'); // Modal
-      const cancelButton = document.getElementById('cancelButton'); // Tombol "Batal"
-      const roomButtons = document.querySelectorAll('.room-button'); // Tombol ruangan
+ document.addEventListener('DOMContentLoaded', () => {
+  const ambilButton = document.getElementById('ambilButton'); // Tombol "Ambil"
+  const tahanButton = document.getElementById('tahanButton'); // Tombol "Tahan"
+  const modal = document.getElementById('modal'); // Modal
+  const cancelButton = document.getElementById('cancelButton'); // Tombol "Batal"
+  const roomButtons = document.querySelectorAll('.room-button'); // Tombol ruangan
+  const dropdown = document.querySelector('select[name="id_ruangan"]'); // Dropdown di modal
 
-      let selectedRoom = null; // Ruangan yang dipilih
+  let selectedRoom = null; // Ruangan yang dipilih
 
-      // Klik tombol ruangan untuk memilih ruangan
-      roomButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          // Reset semua tombol ke warna awal
-          roomButtons.forEach(btn => {
-            btn.classList.remove('bg-gray-400', 'text-white'); // Hapus kelas tombol dipilih
-            btn.classList.add('bg-white', 'text-black'); // Kembalikan ke gaya awal
-          });
-
-          // Tambahkan kelas abu-abu ke tombol yang dipilih
-          button.classList.remove('bg-white', 'text-black'); // Hapus kelas awal
-          button.classList.add('bg-gray-400', 'text-white'); // Tambahkan kelas abu-abu dan teks putih
-
-          // Simpan ruangan yang dipilih
-          selectedRoom = button.textContent.trim(); // Ambil nama ruangan
-          console.log('Room selected:', selectedRoom);
+  // Klik tombol ruangan untuk memilih ruangan
+  roomButtons.forEach(button => {
+    if (button.classList.contains('bg-red-500')) {
+      // Nonaktifkan tombol untuk ruangan yang tidak tersedia
+      button.disabled = true;
+      button.classList.add('cursor-not-allowed'); // Tambahkan gaya untuk memperjelas
+    } else {
+      button.addEventListener('click', () => {
+        // Reset semua tombol ke warna awal
+        roomButtons.forEach(btn => {
+          if (btn.classList.contains('bg-red-500')) {
+            // Pertahankan warna merah untuk ruangan yang tidak tersedia
+            btn.classList.remove('bg-gray-400', 'text-white');
+            btn.classList.add('bg-red-500', 'text-black');
+          } else {
+            // Reset ruangan lain ke warna awal
+            btn.classList.remove('bg-gray-400', 'text-white');
+            btn.classList.add('bg-white', 'text-black');
+          }
         });
-      });
 
-      // Klik tombol "Ambil"
-      ambilButton.addEventListener('click', () => {
-        if (selectedRoom) {
-          modal.classList.remove('hidden'); // Tampilkan modal
-        } else {
-          alert('Pilih ruangan terlebih dahulu!'); // Validasi jika ruangan belum dipilih
+        // Tambahkan kelas abu-abu ke tombol yang dipilih
+        button.classList.remove('bg-white', 'text-black'); // Hapus kelas awal
+        button.classList.add('bg-gray-400', 'text-white'); // Tambahkan kelas abu-abu dan teks putih
+
+        // Simpan ruangan yang dipilih
+        selectedRoom = button.textContent.trim(); // Ambil nama ruangan
+        console.log('Room selected:', selectedRoom);
+      });
+    }
+  });
+
+  // Klik tombol "Ambil"
+  ambilButton.addEventListener('click', () => {
+    if (selectedRoom) {
+      // Set ruangan yang dipilih di dropdown modal
+      Array.from(dropdown.options).forEach(option => {
+        if (option.textContent.trim() === selectedRoom) {
+          option.selected = true;
         }
       });
 
-      // Klik tombol "Tahan"
-      tahanButton.addEventListener('click', () => {
-        if (selectedRoom) {
-          modal.classList.remove('hidden'); // Tampilkan modal
-        } else {
-          alert('Pilih ruangan terlebih dahulu!'); // Validasi jika ruangan belum dipilih
+      modal.classList.remove('hidden'); // Tampilkan modal
+    } else {
+      alert('Pilih ruangan terlebih dahulu!'); // Validasi jika ruangan belum dipilih
+    }
+  });
+
+  // Klik tombol "Tahan"
+  tahanButton.addEventListener('click', () => {
+    if (selectedRoom) {
+      // Set ruangan yang dipilih di dropdown modal
+      Array.from(dropdown.options).forEach(option => {
+        if (option.textContent.trim() === selectedRoom) {
+          option.selected = true;
         }
       });
 
-      // Klik tombol "Batal"
-      cancelButton.addEventListener('click', () => {
-        modal.classList.add('hidden'); // Sembunyikan modal
-      });
-    });
+      modal.classList.remove('hidden'); // Tampilkan modal
+    } else {
+      alert('Pilih ruangan terlebih dahulu!'); // Validasi jika ruangan belum dipilih
+    }
+  });
 
-    // Tambahan untuk pengiriman data ke backend
-    document.addEventListener('DOMContentLoaded', () => {
-      const saveButton = document.querySelector('.save-button'); // Tombol "Simpan" di modal
-      const nameInput = document.getElementById('name'); // Input Nama
-      const startDateInput = document.getElementById('start-date'); // Input Tanggal Mulai
-      const endDateInput = document.getElementById('end-date'); // Input Tanggal Berakhir
+  // Klik tombol "Batal"
+  cancelButton.addEventListener('click', () => {
+    modal.classList.add('hidden'); // Sembunyikan modal
+  });
+});
 
-      saveButton.addEventListener('click', (event) => {
-        event.preventDefault(); // Mencegah pengiriman form default
 
-        // Validasi form
-        if (!nameInput.value || !startDateInput.value || !endDateInput.value) {
-          alert('Semua kolom harus diisi!');
-          return;
-        }
-
-        if (!selectedRoom) {
-          alert('Pilih ruangan terlebih dahulu!');
-          return;
-        }
-
-        // Data yang akan dikirim ke backend
-        const requestData = {
-          id_ruangan: selectedRoom, // Ruangan yang dipilih
-          id_dosen: 1, // Ganti dengan ID dosen yang login (opsional, sesuaikan backend)
-          waktu_mulai: startDateInput.value, // Tanggal Mulai dari modal
-          waktu_selesai: endDateInput.value, // Tanggal Berakhir dari modal
-          status_request: ambilButton.classList.contains('active') ? 'ambil' : 'tahan', // Status dari tombol
-        };
-
-        // Kirim data ke backend menggunakan fetch API
-        fetch('/ruangan/request', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, // Token CSRF Laravel
-            },
-            body: JSON.stringify(requestData),
-          })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Gagal menyimpan data');
-            }
-            return response.json();
-          })
-          .then((result) => {
-            alert(result.message || 'Berhasil menyimpan data'); // Pesan sukses dari backend
-            modal.classList.add('hidden'); // Sembunyikan modal
-            location.reload(); // Reload halaman untuk melihat pembaruan (opsional)
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat menyimpan data.');
-          });
-      });
-    });
   </script>
-
-
 </body>
 
 </html>

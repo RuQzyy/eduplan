@@ -55,19 +55,24 @@
   <main class="p-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Greeting Section -->
-      <div class="lg:col-span-2 relative bg-white rounded-xl shadow-2xl overflow-hidden">
-        <!-- Background Image -->
-        <img
-          src="{{ asset('img/progremer.jpeg') }}"
-          alt="Welcome Image"
-          class="w-full h-[300px] object-cover" />
-        <!-- Overlay Text -->
-        <div class="absolute inset-0 flex flex-col justify-center items-start p-8 bg-gradient-to-t from-transparent to-transparent">
-          <h1 class="text-4xl font-extrabold text-blue-700 drop-shadow-md">Hello dosen {{ Auth::user()->name }}!!</h1>
-          <p class="text-blue-600 mt-2 text-lg drop-shadow-md">Selamat datang di website Eduplen To-Do List</p>
-          <p class="text-blue-500 text-sm drop-shadow-md">Penjadwalan Ruang Kelas</p>
-        </div>
-      </div>
+<div class="lg:col-span-2 relative bg-white rounded-xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-500">
+  <!-- Background Image with Parallax Effect -->
+  <div class="relative w-full h-[350px]">
+    <img src="{{ asset('img/progremer.jpeg') }}" alt="Welcome Image" class="absolute inset-0 w-full h-full object-cover opacity-80">
+    <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+  </div>
+  
+  <!-- Overlay Text -->
+  <div class="absolute inset-0 flex flex-col justify-center items-start p-10 text-white">
+    <h1 class="text-5xl font-extrabold drop-shadow-lg animate-fadeInUp">Hello, {{ Auth::user()->name }}!</h1>
+    <p class="text-lg mt-4 drop-shadow-md animate-fadeInUp delay-100">Selamat datang di platform <span class="text-yellow-400 font-semibold">Eduplen To-Do List</span></p>
+    <p class="mt-2 text-md text-gray-300 animate-fadeInUp delay-200">Efisien dalam mengelola jadwal ruang kelas dengan mudah.</p>
+    <a href="/dosen/ruangan" class="mt-6 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-lg shadow-lg animate-fadeInUp delay-300 transition-all">
+      Jelajahi Ruangan
+    </a>
+  </div>
+</div>
+
 
       <!-- Real-Time Calendar -->
       <div class="bg-white p-6 rounded-xl shadow-2xl text-center">
