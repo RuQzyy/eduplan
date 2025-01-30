@@ -21,4 +21,14 @@ class AdminController extends Controller
     {
         return view('admin.ruangan'); // Mengarahkan ke view ruangan
     }
+
+    public function riwayat()
+    {
+        $riwayat = DB::table('request')
+            ->join('ruangan', 'request.id_ruangan', 'ruangan.id_ruangan')
+            ->join('users', 'request.id_dosen', 'users.id')
+            ->get();
+
+        return view('admin.riwayat', compact('riwayat'));
+    }
 }

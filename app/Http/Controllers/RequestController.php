@@ -17,6 +17,7 @@ class RequestController extends Controller
             'id_ruangan' => 'required',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required',
+            'kelas' => 'required',
         ], $messages);
     }
 }

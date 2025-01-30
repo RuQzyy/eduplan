@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -36,19 +37,25 @@ class AuthenticatedSessionController extends Controller
 
             // Tambahkan logika pengalihan berdasarkan role
             $role = Auth::user()->role; // Pastikan kolom 'role' ada di tabel users
+            $peng = Auth::user()->name;
 
             if ($role === 'admin') {
+                Alert::alert('Login', 'selamat datang admin', 'success');
                 return redirect()->intended('admin/dashboard');
             } elseif ($role === 'dosen') {
+
+                Alert::alert('Login', 'selamat datang ' . $peng, 'success');
                 return redirect()->intended('dosen/dashboard');
             } else {
                 return redirect()->intended('dashboard');
             }
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+        //     return back()->withErrors([
+        //         'email' => 'Email atau password salah.',
+        //     ])->onlyInput('email');
+        Alert::alert('Gagal Login', 'Username atau password salah', 'error');
+        return back();
     }
 
     /**
@@ -64,6 +71,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        Alert::alert('Logout', 'Anda berhasil logout', 'success');
         return redirect('/login');
     }
 }

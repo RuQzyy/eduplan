@@ -6,6 +6,8 @@ $ruangan = DB::table('ruangan')->get();
 @endphp
 
 <head>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <meta charset="utf-8" />
@@ -123,12 +125,6 @@ $ruangan = DB::table('ruangan')->get();
       </div>
     </div>
 
-    <!-- Notes -->
-    <div class="custom-blue p-6 mt-6 rounded-lg shadow-md">
-      <div class="text-white text-center font-bold mb-4">Catatan</div>
-      <textarea class="w-full h-32 p-3 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-    </div>
-  </div>
 
   <!-- Modal -->
   <div id="modal" class="hidden fixed inset-0 flex items-center justify-center z-50">
@@ -148,6 +144,10 @@ $ruangan = DB::table('ruangan')->get();
             <option value="{{ $ruangan->id_ruangan }}">{{ $ruangan->nama_ruangan }}</option>
             @endforeach
           </select>
+        </div>
+        <div class="mb-4">
+          <label for="" class="block text-gray-700">kelas</label>
+          <input id="" name="kelas" type="text" class="w-full border border-gray-400 p-2 rounded" />
         </div>
         <div class="mb-4">
           <label for="start-date" class="block text-gray-700">Waktu Mulai</label>
@@ -248,6 +248,7 @@ $ruangan = DB::table('ruangan')->get();
 
 
   </script>
+  @include('sweetalert::alert')
 </body>
 
 </html>

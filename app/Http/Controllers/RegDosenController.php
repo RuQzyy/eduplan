@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ruangan;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Hash;
 
-class RuanganController extends Controller
+class RegDosenController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $ruangan = DB::table('ruangan');
-        return view('ruangan.index', compact('ruangan'));
+        //
     }
 
     /**
@@ -23,7 +21,7 @@ class RuanganController extends Controller
      */
     public function create()
     {
-        return view('ruangan.create');
+        //
     }
 
     /**
@@ -32,15 +30,19 @@ class RuanganController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_ruangan' => 'required',
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required'
         ]);
-        $data = new Ruangan();
-        $data->status_ruangan = 'tersedia';
-        $data->nama_ruangan = $request->nama_ruangan;
-        $data->save();
 
-        Alert::success('Sukses', 'Permintaan Dikirim ke admin');
-        return redirect()->route('ruangan.index');
+        $reg = new User();
+        $reg->name = $request->name;
+        $reg->password = Hash::make($request->password);
+        $reg->email = $request->email;
+        $reg->role = 'dosen';
+        $reg->save();
+
+        return redirect()->back();
     }
 
     /**
@@ -64,12 +66,7 @@ class RuanganController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $ruangan = Ruangan::find($id);
-        $ruangan->status_ruangan = 'Tersedia';
-        $ruangan->save();
-        Alert::success('Sukses', 'Ruangan telah diperbarui');
-        return redirect()->route('ruangan');
-        
+        //
     }
 
     /**

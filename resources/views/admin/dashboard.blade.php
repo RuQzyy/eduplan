@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+@php
+$permintaan = DB::table('request')
+->join('ruangan', 'request.id_ruangan', 'ruangan.id_ruangan')
+->join('users', 'request.id_dosen', 'users.id')
+->where('status_request', '=', 'Menunggu Verifikasi')
+->get();
+@endphp
 
 <head>
     <meta charset="UTF-8">
@@ -38,6 +45,10 @@
             color: white;
         }
 
+        .warna {
+            color: black;
+        }
+
         .welcome-image {
             filter: brightness(0.85);
             transition: filter 0.3s ease;
@@ -71,6 +82,9 @@
             <a class="flex items-center text-white hover:text-gray-200" href="{{ url('admin/dashboard') }}">
                 <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
             </a>
+            <a class="flex items-center text-white hover:text-gray-200" href="{{ route('admin.riwayat') }}">
+                <i class="fas fa-tachometer-alt mr-2"></i> riwayat kelas
+            </a>
             <a class="flex items-center text-white hover:text-gray-200" href="{{ url('admin/ruangan') }}">
                 <i class="fas fa-building mr-2"></i> Ruangan
             </a>
@@ -92,17 +106,44 @@
                     <p class="text-lg font-medium">
                         Kelola jadwal dengan mudah dan efisien menggunakan fitur lengkap kami.
                     </p>
-                    <button class="bg-teal-600 hover:bg-teal-700 font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">
-                        Jelajahi Sekarang
-                    </button>
+                    <!-- <a href="{{route('register')}}" class="bg-teal-600 hover:bg-teal-700 font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">registrasi dosen</a> -->
+                    <button id="openModal" class="bg-teal-600 hover:bg-teal-700 font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">Register Dosen</button>
+                    <!-- Modal -->
+                    <div id="modal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+                        <div class="modal-overlay absolute inset-0 bg-black opacity-50"></div>
+                        <div class="bg-white rounded-lg shadow-lg w-96 p-6 relative">
+                            <h2 class="text-xl font-bold mb-4 warna">Registrasi Dosen</h2>
+                            <form action="{{ route('reg_dosen.store') }}" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="" class="block text-gray-700">Nama</label>
+                                    <input id="" name="name" type="text" class="w-full border border-gray-400 p-2 rounded warna" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="end-date" class="block text-gray-700">Email</label>
+                                    <input id="" name="email" type="email" class="w-full border border-gray-400 p-2 rounded warna" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="end-date" class="block text-gray-700">Password</label>
+                                    <input id="" name="password" type="password" class="w-full border border-gray-400 p-2 rounded warna" required />
+                                </div>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" id="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
 
             <!-- Calendar Section -->
             <div class="bg-white p-6 shadow-lg rounded-xl">
                 <div class="text-center">
-                <p id="current-time" class="text-lg font-semibold text-gray-600"></p>
-                <p class="bg-teal-500 text-white inline-block px-3 py-1 rounded-lg text-sm mt-1" id="today-info"></p>
+                    <p id="current-time" class="text-lg font-semibold text-gray-600"></p>
+                    <p class="bg-teal-500 text-white inline-block px-3 py-1 rounded-lg text-sm mt-1" id="today-info"></p>
 
                 </div>
                 <div class="mt-6">
@@ -121,6 +162,8 @@
             </div>
         </div>
 
+        <!-- nanti taru modal di sini -->
+
         <!-- Class Requests Section -->
         <section class="bg-white p-6 shadow-lg rounded-xl">
             <h2 class="text-2xl font-bold mb-6">Permintaan Kelas</h2>
@@ -131,7 +174,7 @@
                         <i class="fas fa-user-tie text-teal-500"></i>
                         <span class="font-medium">{{ $minta->name }}</span>
                     </div>
-                    <div class="text-gray-500">Ruangan: {{ $minta->nama_ruangan }} | {{ $minta->waktu_mulai }} - {{ $minta->waktu_selesai }} WIT</div>
+                    <div class="text-gray-500">Ruangan: {{ $minta->nama_ruangan }} kelas: {{ $minta->kelas }} | {{ $minta->waktu_mulai }} - {{ $minta->waktu_selesai }} WIT</div>
                     <div class="flex items-center space-x-2">
                         <form action="{{ route('permintaan.terima', $minta->id_request) }}" method="POST">
                             @method('PUT')
@@ -221,6 +264,33 @@
         updateTime();
     </script>
     </div>
+    @include('sweetalert::alert')
 </body>
+<script>
+    // JavaScript to toggle modal visibility
+    const openModalButton = document.getElementById('openModal');
+    const closeModalButton = document.getElementById('closeModal');
+    const closeModalButton2 = document.getElementById('closeModal2');
+    const modal = document.getElementById('modal');
+
+    openModalButton.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    closeModalButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    closeModalButton2.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Close modal on clicking outside modal content
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+</script>
 
 </html>

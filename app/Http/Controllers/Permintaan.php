@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Container\Attributes\Auth;
 use App\Models\Ruangan;
 use Carbon\Carbon;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class Permintaan extends Controller
 {
@@ -38,6 +39,7 @@ class Permintaan extends Controller
             'id_ruangan' => 'required',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required',
+            'kelas' => 'required',
         ], $messages);
 
         $data = new ModelsRequest();
@@ -45,10 +47,11 @@ class Permintaan extends Controller
         $data->id_ruangan = $request->id_ruangan;
         $data->waktu_mulai = $request->waktu_mulai;
         $data->waktu_selesai = $request->waktu_selesai;
+        $data->kelas = $request->kelas;
         $data->tanggal_request = Carbon::now();
         $data->status_request = 'Menunggu Verifikasi';
         $data->save();
-
+        Alert::success('Sukses', 'permintaan ruangan berhasil dikirim');
         return redirect()->back();
     }
 
@@ -61,6 +64,7 @@ class Permintaan extends Controller
         $ruangan = Ruangan::find($permintaan->id_ruangan);
         $ruangan->status_ruangan = 'Tidak Tersedia';
         $ruangan->save();
+        Alert::success('Sukses', 'Ruangan Berhasil di terima');
         return redirect()->back();
     }
 
@@ -73,6 +77,9 @@ class Permintaan extends Controller
         $ruangan = Ruangan::find($permintaan->id_ruangan);
         $ruangan->status_ruangan = 'Tersedia';
         $ruangan->save();
+        Alert::info('Ditolak', 'Permintaan berhasil ditolak.');
+        return redirect()->back();
+
         return redirect()->back();
     }
 

@@ -39,6 +39,7 @@
         <i class="fas fa-calendar-alt"></i>
         <span>Dashboard</span>
       </a>
+      
       <!-- Link Ruangan -->
       <a class="flex items-center space-x-2 hover:text-yellow-400" href="/dosen/ruangan">
         <i class="fas fa-door-open"></i>
@@ -137,7 +138,7 @@
             @if($row->id_dosen == Auth::user()->id)
             <p class="text-gray-600">
               @if($row->tanggal_request == $hari)
-              {{ $row->nama_ruangan }} | {{ $row->waktu_mulai }} - {{ $row->waktu_selesai }}
+              {{ $row->nama_ruangan }} |   {{ $row->kelas }} | {{ $row->waktu_mulai }} - {{ $row->waktu_selesai }}
               @endif
             </p>
             @endif
@@ -161,6 +162,7 @@
       </div>
     </div>
   </main>
+  @include('sweetalert::alert')
 </body>
 
 </html>
